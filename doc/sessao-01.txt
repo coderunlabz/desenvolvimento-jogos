@@ -23,7 +23,7 @@ peso zero e, por isso, não sofre translação.
 Decisão assumida
 
 Vector2D.hpp inclui Global.hpp, arquivo que não acompanhou o e-mail de
-22/09/2026. Foi criado source/code_1/Global.hpp com a constante
+22/09/2026. Foi criado source/Global.hpp com a constante
 EPSILON = 1e-6f. Um valor dessa ordem trata como zero qualquer número
 pequeno demais para definir uma direção ou uma divisão segura. Caso o
 professor envie o header oficial, a substituição se limita a esse
@@ -65,7 +65,7 @@ Testes
 
 O professor não pediu um programa de testes. A dupla decidiu
 documentá-los mesmo assim, para deixar registrado o que foi executado
-e o que o contrato recusa. O programa está em tests/code_1/edge.cpp.
+e o que o contrato recusa. O programa está em tests/edge.cpp.
 Ele não altera Vector2D nem Transform2D: apenas chama as funções já
 declaradas nos headers. Foi compilado com g++ -std=c++17 e executado
 em 26/09/2026. O compilador desta máquina emite aviso de que ignora o
