@@ -1,0 +1,105 @@
+Diário da sessão 1 — Vector2D e Transform2D
+Data: 26/09/2026
+Dupla: Nicolas e Maurício César
+
+Método
+
+A implementação segue exclusivamente o contrato declarado em Vector2D.hpp
+e Transform2D.hpp. Nenhum header enviado pelo professor foi alterado.
+Cada função respeita o nome, a assinatura e a semântica escritos no
+cabeçalho. As pré-condições foram verificadas com assert, que deixa de
+existir quando o programa é compilado com NDEBUG.
+
+Uso de modelo de linguagem
+
+Os arquivos Vector2D.cpp e Transform2D.cpp foram redigidos no Cursor,
+com o modelo Grok, a partir do pedido de implementar o recheio dos dois
+contratos e documentar a entrega. As fórmulas de produto, normalização
+e matriz foram tomadas do próprio header e da aula 3. A conferência
+manual verificou três pontos: a composição aplica a transformação da
+esquerda primeiro; a translação ocupa a terceira linha; a direção usa
+peso zero e, por isso, não sofre translação.
+
+Decisão assumida
+
+Vector2D.hpp inclui Global.hpp, arquivo que não acompanhou o e-mail de
+22/09/2026. Foi criado source/code_1/Global.hpp com a constante
+EPSILON = 1e-6f. Um valor dessa ordem trata como zero qualquer número
+pequeno demais para definir uma direção ou uma divisão segura. Caso o
+professor envie o header oficial, a substituição se limita a esse
+arquivo.
+
+Vector2D
+
+normalized e normalize dividem cada componente pelo comprimento.
+A pré-condição exige comprimento estritamente maior que EPSILON.
+O vetor nulo não possui direção; o assert encerra a execução em modo
+de depuração. A pós-condição de normalized exige que o comprimento do
+resultado diste de 1 por menos de EPSILON.
+
+equals compara o valor absoluto da diferença de cada componente com a
+tolerância informada. Números de ponto flutuante não são comparados
+com igualdade exata.
+
+Os operadores +, -, * e / produzem um vetor novo. As formas +=, -=, *=
+e /= alteram o vetor corrente e devolvem *this. A divisão exige que o
+valor absoluto do escalar seja maior que EPSILON. A função livre
+operator*(float, Vector2D) permite escrever o escalar à esquerda.
+
+Transform2D
+
+A convenção adotada é a do header, no estilo DirectX. O armazenamento
+é por linha, em m[linha][coluna]. O vetor é linha. O ponto carrega
+peso 1 e a direção carrega peso 0. A translação fica na terceira linha.
+
+translation parte da identidade e grava tx e ty em m[2][0] e m[2][1].
+rotation recebe o ângulo em radianos, positivo no sentido anti-horário,
+e preenche a matriz com cosseno e seno conforme o comentário do header.
+scale grava sx e sy na diagonal principal.
+
+O operador * calcula o produto de matrizes. A expressão A * B aplica A
+e, em seguida, B. transform_point inclui a terceira linha. 
+transform_vector repete a mesma conta sem os termos de translação.
+
+Testes
+
+O professor não pediu um programa de testes. A dupla decidiu
+documentá-los mesmo assim, para deixar registrado o que foi executado
+e o que o contrato recusa. O programa está em tests/code_1/edge.cpp.
+Ele não altera Vector2D nem Transform2D: apenas chama as funções já
+declaradas nos headers. Foi compilado com g++ -std=c++17 e executado
+em 26/09/2026. O compilador desta máquina emite aviso de que ignora o
+atributo [[nodiscard]] presente nos headers do professor. O resultado
+numérico não depende desse atributo.
+
+Casos ordinários, todos com sucesso:
+
+- o comprimento de (3, 4) é 5, e o vetor normalizado é (0,6, 0,8);
+- soma, subtração, produto e divisão, inclusive com o escalar à
+  esquerda, e os operadores compostos;
+- produto escalar e produto vetorial bidimensional;
+- equals aceita diferença dentro da tolerância e recusa diferença fora;
+- a translação (10, -3) leva o ponto (1, 2) a (11, -1) e deixa a
+  direção inalterada;
+- a rotação de +90 graus leva (1, 0) a (0, 1);
+- a escala (2, 3) atua tanto no ponto quanto na direção;
+- translation(1, 0) * scale(2, 2) aplica a translação primeiro, e o
+  ponto (1, 1) torna-se (4, 2);
+- a rotação de +90 graus do ponto (2, 0) em torno de (1, 0) produz
+  (1, 1).
+
+Casos de fronteira executados em seguida, também em 26/09/2026:
+
+- um vetor de comprimento 2 * EPSILON normaliza para (1, 0);
+- a rotação de 30 graus leva (1, 0) a (cos 30°, sen 30°), com tolerância
+  de 1e-5;
+- a divisão por um escalar ligeiramente maior que EPSILON conclui.
+
+Casos proibidos pelo contrato. Em cada um o assert interrompeu o
+programa com código de saída 3 e a mensagem Assertion failed:
+
+- normalized do vetor (0, 0), em Vector2D.cpp, linha 7;
+- normalize do vetor (0, 0), em Vector2D.cpp, linha 13;
+- divisão de (1, 2) por 0, em Vector2D.cpp, linha 35;
+- divisão de (1, 2) por EPSILON, também na linha 35, porque a
+  pré-condição exige valor estritamente maior que EPSILON.
