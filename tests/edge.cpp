@@ -28,7 +28,8 @@ static int check_allowed_edges() {
     expect(turned.equals(Vector2D{cos30, sin30}, 1e-5f), "rotate 30 degrees");
 
     Vector2D almost = Vector2D{1.0f, 0.0f} / (1.0f + EPSILON);
-    expect(std::abs(almost.x - 1.0f) < 1e-4f, "divide by scalar just above EPSILON");
+    // With official EPSILON = 1e-4, |1/(1+EPS) - 1| is about EPSILON itself.
+    expect(std::abs(almost.x - 1.0f) <= EPSILON * 2.0f, "divide by scalar just above EPSILON");
 
     if (failures != 0) {
         std::cerr << failures << " failed\n";

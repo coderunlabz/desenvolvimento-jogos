@@ -1,0 +1,92 @@
+Diário da sessão 2 — RigidBody2D e Collision2D
+Data: 01/10/2026
+Dupla: Nicolas e Maurício César
+
+Método
+
+A implementação segue exclusivamente o contrato declarado em
+RigidBody2D.hpp e Collision2D.hpp. Nenhum header enviado pelo professor
+foi alterado. Cada função respeita o nome, a assinatura e a semântica
+escritos no cabeçalho. As pré-condições foram verificadas com assert,
+que deixa de existir quando o programa é compilado com NDEBUG.
+
+Uso de modelo de linguagem
+
+Os arquivos RigidBody2D.cpp e Collision2D.cpp foram redigidos no Cursor,
+com o modelo Grok, a partir do handoff da sessão 2 (01/10/2026). As
+fórmulas de integração e de sobreposição de caixas foram tomadas do
+próprio header e da sessão registrada em sessao-02.md. A conferência
+manual verificou três pontos: a ordem velocidade-depois-posição no
+integrate; o encoste de bordas no intersects; e o uso de TILE_SIZE do
+Global.hpp oficial no tamanho padrão da caixa.
+
+Troca do Global.hpp
+
+Na sessão 1 o repositório tinha um Global.hpp assumido, com
+EPSILON = 1.0e-6f e sem TILE_SIZE. O zip da fase 2 trouxe o arquivo
+oficial. source/Global.hpp foi substituído por cópia exata do
+professor: EPSILON = 0.0001f, TILE_SIZE = 64.0f, além dos
+identificadores de entidade e da legenda de tiles. Sem TILE_SIZE o
+Collision2D.hpp não compila. Vector2D.hpp e Transform2D.hpp do zip
+foram comparados byte a byte com os do repositório: idênticos, sem
+substituição.
+
+RigidBody2D.cpp
+
+integrate avança um passo de tempo fixo pelo Euler semi-implícito:
+primeiro velocity += acceleration * dt, depois
+position += velocity * dt, usando a velocidade já atualizada.
+Pré-condição: dt > 0. Unidades: pixels, pixels/s e pixels/s².
+A função é noexcept e usa só operadores do Vector2D também noexcept.
+A classe não aplica força nem rotação: quem chama preenche a
+aceleração antes de integrar.
+
+Collision2D.cpp
+
+AABB::intersects devolve verdadeiro quando as caixas se sobrepõem nos
+dois eixos. Encostar nas bordas conta: a separação só ocorre quando
+há intervalo aberto entre os limites (comparação com >=).
+Collision2D::bounds monta a caixa no mundo centrada na posição:
+de position - halfExtents até position + halfExtents. O padrão das
+meias-medidas é TILE_SIZE * 0.5 (32 × 32), vindo do Global.hpp.
+
+O que foi testado
+
+Programas em tests/, compilados com g++ -std=c++17 em 01/10/2026.
+Não fazem parte da pasta source/.
+
+Após a troca do Global.hpp, os testes da sessão 1 (tests/edge.cpp,
+modo allowed) foram rodados de novo. A checagem local que media
+|1/(1+EPSILON) − 1| com limite fixo 1e-4 ficou apertada demais com o
+EPSILON oficial (0.0001): a diferença é da ordem do próprio EPSILON.
+O limite do teste local passou a EPSILON * 2. Os .cpp da sessão 1 não
+mudaram.
+
+Casos da sessão 2 (tests/sessao2.cpp), todos com sucesso:
+
+- integrate com dt = 0,5 e aceleração (2, 0), tudo zero: velocidade
+  (1, 0) e posição (0,5; 0) — distingue o Euler semi-implícito do
+  explícito;
+- aceleração zero e velocidade (3, −1): a velocidade permanece e a
+  posição avança velocidade × dt;
+- tudo zero: nada se move;
+- aceleração (0, 10): o corpo desce na tela (y cresce para baixo);
+- caixas encostando na borda vertical e na horizontal: intersects
+  verdadeiro;
+- caixa contida em outra: overlaps;
+- caixas com folga: não se sobrepõem;
+- bounds no ponto (100, 200) com o padrão 64 × 64: min (68, 168) e
+  max (132, 232);
+- halfExtents padrão iguais a (32, 32).
+
+Caso proibido: integrate(0), em tests/dt0.cpp, dispara Assertion
+failed em RigidBody2D.cpp (pré-condição dt > 0), com código de saída 3.
+
+O compilador desta máquina emite aviso de que ignora [[nodiscard]]
+nos headers do professor. O resultado numérico não depende disso.
+
+Decisão que o contrato não cobre
+
+Nenhuma fórmula foi inventada fora do header. O teste local da sessão 1
+teve o limite numérico ajustado por causa do EPSILON oficial; isso não
+altera o contrato nem o Vector2D.cpp.
