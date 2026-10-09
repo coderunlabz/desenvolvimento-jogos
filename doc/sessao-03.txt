@@ -1,0 +1,66 @@
+Diário da sessão 3 — Dungeon2D e TileMap
+Data: 08/10/2026
+Dupla: Nicolas e Maurício César
+
+Método
+
+A implementação segue os contratos em Dungeon2D.hpp e TileMap.hpp.
+Nenhum header do professor foi alterado. Helpers privados ficaram só
+no .cpp. Pré-condições de índice usam assert (somem com NDEBUG).
+
+Uso de modelo de linguagem
+
+Dungeon2D.cpp e TileMap.cpp foram redigidos no Cursor (modelo Grok),
+a partir do handoff da sessão 3 (08/10/2026) e de sessao-03.md no
+Rampage. O gerador BSP, a rasterização e o CSV foram conferidos contra
+os casos de teste listados na sessão.
+
+Convenções da dupla (não escritas pelo professor)
+
+1. Retângulos semiabertos: left/top inclusivos, right/bottom exclusivos.
+   Largura = right − left; altura = bottom − top.
+2. Construtor rejeita largura ou altura menor que 5 com
+   std::invalid_argument, porque a sala mínima é 5 × 5.
+3. Corredores em L: dois segmentos de espessura 3, com junção
+   sobreposta; segmentos inteiros dentro do mapa (espessura não é
+   aparada na borda).
+4. CSV inválido: arquivo vazio, célula ausente, vírgula final, token
+   malformado, linhas de larguras diferentes. Aceita LF e CRLF.
+
+Dungeon2D.cpp
+
+Construtor grava width/height e rejeita mapas menores que 5 × 5.
+generate(seed) limpa a árvore e a lista de corredores, usa
+std::mt19937(seed) e parte a região [0,width) × [0,height).
+Divide enquanto um eixo tiver pelo menos 10 tiles (dois filhos de
+5). Nas folhas coloca sala aleatória >= 5 × 5 dentro da região.
+Em cada nó interno liga uma sala de cada subárvore com corredor em L
+de largura 3. Mesma semente, mesmo ambiente: mesmo dungeon.
+
+TileMap.cpp
+
+loadFromDungeon dimensiona a matriz, preenche WALL_TILE e abre
+EMPTY_TILE nas salas das folhas e em todos os corredores.
+Armazenamento por linha. saveCSV/loadCSV no formato do header; falha
+em loadCSV não altera o mapa anterior. toIndices usa floor em float;
+toWorld devolve o centro da célula. randomEmptyCell escolhe entre as
+células vazias (pré: existe ao menos uma).
+
+O que foi testado
+
+Ambiente: Windows, g++ -std=c++17. Programa tests/sessao3.cpp.
+Resultado: ok sessao3 (exit 0) em 08/10/2026.
+
+Casos cobertos: rejeição 0/negativo/4×10/10×4; mapas 5×5, 5×30, 30×5,
+30×30 e 80×60 com sementes 0, 1, 42 e 2026; repetição da semente;
+árvore (folha/interno); conectividade por BFS; espessura 3 dos
+corredores; rasterização manual; CSV ida e volta e rejeições;
+coordenadas world↔índice; sorteio; regressões das sessões 1 e 2
+(também tests/sessao2.cpp e tests/edge.cpp allowed: ok).
+
+Entendimento
+
+As perguntas de entendimento da skill não foram aplicadas nesta
+entrega, a pedido de Nicolas na sessão 2 e sem nova autorização para
+bloquear aqui. O diário registra implementação e testes; não avalia
+domínio linha a linha.
