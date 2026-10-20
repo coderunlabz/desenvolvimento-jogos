@@ -1,0 +1,61 @@
+Diário da sessão 4 — BehaviorTree, Entity e NPC
+Data: 20/10/2026
+Dupla: Nicolas e Maurício César
+
+Método
+
+A implementação segue exclusivamente o contrato de BehaviorTree.hpp.
+Entity.hpp e NPC.hpp são structs só de cabeçalho; não há .cpp deles.
+Nenhum header do professor foi alterado. Cópia byte a byte de
+C:\Nova pasta\UTFPR\2026-02\dj\aula-6 para source/. SHA-256 conferido
+igual ao original.
+
+Uso de modelo de linguagem
+
+BehaviorTree.cpp e tests/sessao4.cpp foram redigidos no Cursor
+(modelo Grok), a partir do pedido da fase 4 de 20/10/2026 e dos
+materiais em projetos/utfpr/dj/materiais/fase-4-arvore-de-comportamento.md.
+A semântica de Condition, Action, Sequence, Selector e BehaviorTree::tick
+saiu do comentário do próprio .hpp. O teste da porta usa os nomes de
+teste.cpp, não os nomes abreviados do PDF.
+
+BehaviorTree.cpp
+
+Condition: sucesso só se a chave existe no contexto com valor != 0;
+chave ausente ou valor 0 = falha; comando vazio.
+Action: sempre sucesso; carrega a string do construtor.
+Sequence: esquerda para a direita; falha no primeiro filho que falha
+(comando vazio na falha); se todos têm sucesso, carrega o último
+comando não vazio.
+Selector: esquerda para a direita; sucesso no primeiro filho que dá
+certo, com o comando dele; falha se todos falham.
+BehaviorTree::tick: comando da raiz em caso de sucesso, ou "" se a
+raiz falhou. Raiz nula (não coberta pelo .hpp) também devolve "".
+
+Decisões onde o .hpp não diz
+
+Sequence sem filhos: sucesso vazio (nenhum filho falhou; último
+comando não vazio é ""). Documentado aqui; o header não especifica.
+Se a mesma chave aparece mais de uma vez no contexto, vale a primeira
+ocorrência da esquerda para a direita.
+
+O que foi testado
+
+Ambiente: Windows, g++ 6.3.0, -std=c++17. Programa tests/sessao4.cpp.
+Não inclui NPC.hpp (depende de SFML). Entity.hpp passou em checagem
+de sintaxe sem SFML. SFML não está instalado neste ambiente; as
+tarefas opcionais 3 e 4 (quadrado com setas e teste2 na tela) ficam
+fora do repositório.
+
+Resultado: ok sessao4 (exit 0) em 20/10/2026.
+
+Casos: contexto da porta de teste.cpp → DestranquePorta; contexto
+vazio → CaminhePorta; Passou → FechePorta; NaPorta+PortaAberta → Passe;
+NaPorta+PortaDestrancada+PortaFechada → AbrirPorta; chave 0 e chave
+ausente falham; Selector sem filhos → ""; Sequence sem filhos →
+sucesso e tick ""; Sequence de várias ações → último comando não
+vazio; patrulha do teste2 (IndoParaA/B e ChegouPontoA/B).
+
+O que não vai no GitHub
+
+um-quadrado.png, teste.cpp e teste2.cpp do professor, código SFML.
