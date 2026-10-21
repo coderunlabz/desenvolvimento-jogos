@@ -12,12 +12,9 @@ igual ao original.
 
 Uso de modelo de linguagem
 
-BehaviorTree.cpp e tests/sessao4.cpp foram redigidos no Cursor
-(modelo Grok), a partir do pedido da fase 4 de 20/10/2026 e dos
-materiais em projetos/utfpr/dj/materiais/fase-4-arvore-de-comportamento.md.
-A semântica de Condition, Action, Sequence, Selector e BehaviorTree::tick
-saiu do comentário do próprio .hpp. O teste da porta usa os nomes de
-teste.cpp, não os nomes abreviados do PDF.
+BehaviorTree.cpp foi redigido no Cursor (modelo Grok), a partir do pedido
+da fase 4 de 20/10/2026. A semântica de Condition, Action, Sequence,
+Selector e BehaviorTree::tick saiu do comentário do próprio .hpp.
 
 BehaviorTree.cpp
 
@@ -41,21 +38,14 @@ ocorrência da esquerda para a direita.
 
 O que foi testado
 
-Ambiente: Windows, g++ 6.3.0, -std=c++17. Programa tests/sessao4.cpp.
-Não inclui NPC.hpp (depende de SFML). Entity.hpp passou em checagem
-de sintaxe sem SFML. SFML não está instalado neste ambiente; as
-tarefas opcionais 3 e 4 (quadrado com setas e teste2 na tela) ficam
-fora do repositório.
-
-Resultado: ok sessao4 (exit 0) em 20/10/2026.
-
-Casos: contexto da porta de teste.cpp → DestranquePorta; contexto
-vazio → CaminhePorta; Passou → FechePorta; NaPorta+PortaAberta → Passe;
-NaPorta+PortaDestrancada+PortaFechada → AbrirPorta; chave 0 e chave
-ausente falham; Selector sem filhos → ""; Sequence sem filhos →
-sucesso e tick ""; Sequence de várias ações → último comando não
-vazio; patrulha do teste2 (IndoParaA/B e ChegouPontoA/B).
+Ambiente: Windows, g++ 6.3.0, -std=c++17. A árvore foi verificada com o
+exemplo teste.cpp do professor (contexto da porta → DestranquePorta) e
+com contextos próprios para cada tipo de nó. Entity.hpp passou em
+checagem de sintaxe sem SFML; NPC.hpp depende de SFML. As tarefas
+opcionais 3 e 4 (quadrado com setas e teste2 na tela) ficam fora do
+repositório.
 
 O que não vai no GitHub
 
-um-quadrado.png, teste.cpp e teste2.cpp do professor, código SFML.
+um-quadrado.png, teste.cpp e teste2.cpp do professor, código SFML e
+programas de teste próprios.
